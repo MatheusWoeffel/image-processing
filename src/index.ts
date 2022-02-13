@@ -111,8 +111,18 @@ savePictureBtn.addEventListener("clicked", () => {
     fileDialog.setFileMode(FileMode.Directory);
     fileDialog.exec();
 
+    const filenameInputDialog = new QInputDialog();
+    filenameInputDialog.setLabelText("Escolha o nome do arquivo: ");
+    filenameInputDialog.setInputMode(InputMode.TextInput);
+
+    let fileName = "";
+    filenameInputDialog.addEventListener("textValueChanged", (value) => {
+      fileName = value;
+    });
+    filenameInputDialog.exec();
+
     const selectedFiles = fileDialog.selectedFiles();
-    const path = selectedFiles[0] + "/newPicture.jpeg";
+    const path = `${selectedFiles[0]}/${fileName}.jpg`;
     writeFileSync(path, lastImageTransformed.data);
   }
 });
