@@ -7,7 +7,6 @@ import {
   QPixmap,
   QFileDialog,
   FileMode,
-  InputDialogOptions,
   QInputDialog,
   InputMode,
 } from "@nodegui/nodegui";
@@ -33,7 +32,6 @@ const quantizeBtn = new QPushButton();
 let imageData: Image | undefined;
 let lastImageTransformed: Image | undefined;
 
-//----------
 getPictureBtn.setText("Select a photo");
 getPictureBtn.addEventListener("clicked", () => {
   const fileDialog = new QFileDialog();
@@ -55,7 +53,6 @@ getPictureBtn.addEventListener("clicked", () => {
   originalPictureWin.show();
 });
 
-//--------------
 convertToGreyscaleBtn.setText("Convert to greyscale");
 convertToGreyscaleBtn.addEventListener("clicked", () => {
   if (imageData) {
