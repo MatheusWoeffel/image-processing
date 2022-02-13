@@ -13,6 +13,7 @@ import { decode, encode } from "jpeg-js";
 import { Image } from "./image-operations/types";
 import { convertToGrayScale } from "./image-operations/convertToGrayscale";
 import { mirrorHorizontally } from "./image-operations/mirrorHorizontally";
+import { mirrorVertically } from "./image-operations/mirrorVertically";
 
 const NUMBER_OF_CHANNELS = 4;
 
@@ -22,6 +23,7 @@ const getPictureBtn = new QPushButton();
 const savePictureBtn = new QPushButton();
 const convertToGreyscaleBtn = new QPushButton();
 const flipHorizontallyBtn = new QPushButton();
+const flipVerticallyBtn = new QPushButton();
 
 let imageData: Image | undefined;
 let lastImageTransformed: Image | undefined;
@@ -69,6 +71,16 @@ flipHorizontallyBtn.addEventListener("clicked", () => {
   }
 });
 
+flipVerticallyBtn.setText("Flip Vertically");
+flipVerticallyBtn.addEventListener("clicked", () => {
+  if (imageData) {
+    const newImage = mirrorVertically(imageData, NUMBER_OF_CHANNELS);
+    const newImageEncoded = encode(newImage);
+    displayNewImageWindow(newImageEncoded);
+    lastImageTransformed = newImageEncoded;
+  }
+});
+
 savePictureBtn.setText("Save last transformed picture");
 savePictureBtn.addEventListener("clicked", () => {
   if (lastImageTransformed) {
@@ -84,6 +96,7 @@ savePictureBtn.addEventListener("clicked", () => {
 
 center.setLayout(new FlexLayout());
 center.layout?.addWidget(getPictureBtn);
+center.layout?.addWidget(flipVerticallyBtn);
 center.layout?.addWidget(flipHorizontallyBtn);
 center.layout?.addWidget(convertToGreyscaleBtn);
 center.layout?.addWidget(savePictureBtn);
