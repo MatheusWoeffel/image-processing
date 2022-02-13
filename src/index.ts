@@ -7,6 +7,9 @@ import {
   QPixmap,
   QFileDialog,
   FileMode,
+  InputDialogOptions,
+  QInputDialog,
+  InputMode,
 } from "@nodegui/nodegui";
 import { readFileSync, writeFileSync } from "fs";
 import { decode, encode } from "jpeg-js";
@@ -14,6 +17,7 @@ import { Image } from "./image-operations/types";
 import { convertToGrayScale } from "./image-operations/convertToGrayscale";
 import { mirrorHorizontally } from "./image-operations/mirrorHorizontally";
 import { mirrorVertically } from "./image-operations/mirrorVertically";
+import { quantizeImage } from "./image-operations/quantizeImage";
 
 const NUMBER_OF_CHANNELS = 4;
 
@@ -24,6 +28,7 @@ const savePictureBtn = new QPushButton();
 const convertToGreyscaleBtn = new QPushButton();
 const flipHorizontallyBtn = new QPushButton();
 const flipVerticallyBtn = new QPushButton();
+const quantizeBtn = new QPushButton();
 
 let imageData: Image | undefined;
 let lastImageTransformed: Image | undefined;
@@ -81,6 +86,24 @@ flipVerticallyBtn.addEventListener("clicked", () => {
   }
 });
 
+quantizeBtn.setText("Change number of shades");
+quantizeBtn.addEventListener("clicked", () => {
+  const inputDialog = new QInputDialog();
+  inputDialog.setIntMinimum(1);
+
+  let numberOfShades = 1;
+  inputDialog.addEventListener("intValueChanged", (value) => {
+    numberOfShades = value;
+  });
+  inputDialog.setInputMode(InputMode.IntInput);
+  inputDialog.exec();
+
+  const newImage = quantizeImage(imageData, numberOfShades, NUMBER_OF_CHANNELS);
+  const newImageEncoded = encode(newImage);
+  displayNewImageWindow(newImageEncoded);
+  lastImageTransformed = newImageEncoded;
+});
+
 savePictureBtn.setText("Save last transformed picture");
 savePictureBtn.addEventListener("clicked", () => {
   if (lastImageTransformed) {
@@ -99,6 +122,7 @@ center.layout?.addWidget(getPictureBtn);
 center.layout?.addWidget(flipVerticallyBtn);
 center.layout?.addWidget(flipHorizontallyBtn);
 center.layout?.addWidget(convertToGreyscaleBtn);
+center.layout?.addWidget(quantizeBtn);
 center.layout?.addWidget(savePictureBtn);
 center.setInlineStyle(`width: 400; height: 400;`);
 win.setCentralWidget(center);
