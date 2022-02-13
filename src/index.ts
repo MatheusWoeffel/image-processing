@@ -12,12 +12,16 @@ import { readFileSync, writeFileSync } from "fs";
 import { decode, encode } from "jpeg-js";
 import { Image } from "./image-operations/types";
 import { convertToGrayScale } from "./image-operations/convertToGrayscale";
+import { mirrorHorizontally } from "./image-operations/mirrorHorizontally";
+
+const NUMBER_OF_CHANNELS = 4;
 
 const win = new QMainWindow();
 const center = new QWidget();
 const getPictureBtn = new QPushButton();
 const savePictureBtn = new QPushButton();
 const convertToGreyscaleBtn = new QPushButton();
+const flipHorizontallyBtn = new QPushButton();
 
 let imageData: Image | undefined;
 let lastImageTransformed: Image | undefined;
@@ -48,7 +52,17 @@ getPictureBtn.addEventListener("clicked", () => {
 convertToGreyscaleBtn.setText("Convert to greyscale");
 convertToGreyscaleBtn.addEventListener("clicked", () => {
   if (imageData) {
-    const newImage = convertToGrayScale(imageData, 4);
+    const newImage = convertToGrayScale(imageData, NUMBER_OF_CHANNELS);
+    const newImageEncoded = encode(newImage);
+    displayNewImageWindow(newImageEncoded);
+    lastImageTransformed = newImageEncoded;
+  }
+});
+
+flipHorizontallyBtn.setText("Flip horizontally");
+flipHorizontallyBtn.addEventListener("clicked", () => {
+  if (imageData) {
+    const newImage = mirrorHorizontally(imageData, NUMBER_OF_CHANNELS);
     const newImageEncoded = encode(newImage);
     displayNewImageWindow(newImageEncoded);
     lastImageTransformed = newImageEncoded;
@@ -70,6 +84,7 @@ savePictureBtn.addEventListener("clicked", () => {
 
 center.setLayout(new FlexLayout());
 center.layout?.addWidget(getPictureBtn);
+center.layout?.addWidget(flipHorizontallyBtn);
 center.layout?.addWidget(convertToGreyscaleBtn);
 center.layout?.addWidget(savePictureBtn);
 center.setInlineStyle(`width: 400; height: 400;`);
