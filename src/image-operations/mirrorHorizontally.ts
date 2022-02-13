@@ -1,4 +1,5 @@
 import { Image } from "./types";
+import { fromBufferToPixels } from "./utility";
 
 export function mirrorHorizontally(image: Image, number_of_channels: number) : Image {
   const rows : Buffer[] = [];
@@ -9,13 +10,4 @@ export function mirrorHorizontally(image: Image, number_of_channels: number) : I
   }
 
   return {width: image.width, height: image.height, data: Buffer.concat(rows)};
-}
-
-function fromBufferToPixels(row: Buffer, number_of_channels: number): Buffer[]{
-  const pixels : Buffer[] = [];
-  for(let i = 0; i < (row.length / number_of_channels); i++){
-    let pixel = row.slice(i *number_of_channels, i*number_of_channels + number_of_channels);
-    pixels.push(pixel);
-  }
-  return pixels;
 }
