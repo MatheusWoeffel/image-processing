@@ -121,6 +121,7 @@ savePictureBtn.addEventListener("clicked", () => {
     });
     filenameInputDialog.exec();
 
+    fileName = fileName === "" ? "unamedPhoto" : fileName;
     const selectedFiles = fileDialog.selectedFiles();
     const path = `${selectedFiles[0]}/${fileName}.jpg`;
     writeFileSync(path, lastImageTransformed.data);
