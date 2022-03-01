@@ -11,12 +11,13 @@ import {
   InputMode,
 } from "@nodegui/nodegui";
 import { readFileSync, writeFileSync } from "fs";
-import { decode, encode } from "jpeg-js";
+import { BufferRet, decode, encode } from "jpeg-js";
 import { Image } from "./image-operations/types";
 import { convertToGrayScale } from "./image-operations/convertToGrayscale";
 import { mirrorHorizontally } from "./image-operations/mirrorHorizontally";
 import { mirrorVertically } from "./image-operations/mirrorVertically";
 import { quantizeImage } from "./image-operations/quantizeImage";
+import { adjustBrightness } from "./image-operations/adjustBrightness";
 
 const NUMBER_OF_CHANNELS = 4;
 
@@ -27,10 +28,11 @@ const savePictureBtn = new QPushButton();
 const convertToGreyscaleBtn = new QPushButton();
 const flipHorizontallyBtn = new QPushButton();
 const flipVerticallyBtn = new QPushButton();
+const adjustBrightnessBtn = new QPushButton();
 const quantizeBtn = new QPushButton();
 
 let imageData: Image | undefined;
-let lastImageTransformed: Image | undefined;
+let lastImageTransformed: BufferRet | undefined;
 
 getPictureBtn.setText("Select a photo");
 getPictureBtn.addEventListener("clicked", () => {
@@ -101,6 +103,25 @@ quantizeBtn.addEventListener("clicked", () => {
   lastImageTransformed = newImageEncoded;
 });
 
+adjustBrightnessBtn.setText("Adjust brightness");
+adjustBrightnessBtn.addEventListener("clicked", () => {
+  const inputDialog = new QInputDialog();
+  inputDialog.setIntMinimum(-255);
+  inputDialog.setIntMaximum(255);
+
+  let brightnessIncrease = 0;
+  inputDialog.addEventListener("intValueChanged", (value) => {
+    brightnessIncrease = value;
+  });
+  inputDialog.setInputMode(InputMode.IntInput);
+  inputDialog.exec();
+
+  const newImage = adjustBrightness(imageData, brightnessIncrease, NUMBER_OF_CHANNELS);
+  const newImageEncoded = encode(newImage);
+  displayNewImageWindow(newImageEncoded);
+  lastImageTransformed = newImageEncoded;
+});
+
 savePictureBtn.setText("Save last transformed picture");
 savePictureBtn.addEventListener("clicked", () => {
   if (lastImageTransformed) {
@@ -131,6 +152,7 @@ center.layout?.addWidget(flipVerticallyBtn);
 center.layout?.addWidget(flipHorizontallyBtn);
 center.layout?.addWidget(convertToGreyscaleBtn);
 center.layout?.addWidget(quantizeBtn);
+center.layout?.addWidget(adjustBrightnessBtn);
 center.layout?.addWidget(savePictureBtn);
 center.setInlineStyle(`width: 400; height: 400;`);
 win.setCentralWidget(center);
