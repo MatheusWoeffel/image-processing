@@ -18,6 +18,7 @@ import { mirrorHorizontally } from "./image-operations/mirrorHorizontally";
 import { mirrorVertically } from "./image-operations/mirrorVertically";
 import { quantizeImage } from "./image-operations/quantizeImage";
 import { adjustBrightness } from "./image-operations/adjustBrightness";
+import { adjustContrast } from "./image-operations/adjustContrast";
 
 const NUMBER_OF_CHANNELS = 4;
 
@@ -28,6 +29,7 @@ const savePictureBtn = new QPushButton();
 const convertToGreyscaleBtn = new QPushButton();
 const flipHorizontallyBtn = new QPushButton();
 const flipVerticallyBtn = new QPushButton();
+const adjustContrastBtn = new QPushButton();
 const adjustBrightnessBtn = new QPushButton();
 const quantizeBtn = new QPushButton();
 
@@ -122,6 +124,25 @@ adjustBrightnessBtn.addEventListener("clicked", () => {
   lastImageTransformed = newImageEncoded;
 });
 
+adjustContrastBtn.setText("Adjust contrast");
+adjustContrastBtn.addEventListener("clicked", () => {
+  const inputDialog = new QInputDialog();
+  inputDialog.setDoubleMinimum(0)
+  inputDialog.setDoubleMaximum(255)
+
+  let brightnessIncrease = 0;
+  inputDialog.addEventListener("doubleValueChanged", (value) => {
+    brightnessIncrease = value;
+  });
+  inputDialog.setInputMode(InputMode.DoubleInput);
+  inputDialog.exec();
+
+  const newImage = adjustContrast(imageData, brightnessIncrease, NUMBER_OF_CHANNELS);
+  const newImageEncoded = encode(newImage);
+  displayNewImageWindow(newImageEncoded);
+  lastImageTransformed = newImageEncoded;
+});
+
 savePictureBtn.setText("Save last transformed picture");
 savePictureBtn.addEventListener("clicked", () => {
   if (lastImageTransformed) {
@@ -153,6 +174,7 @@ center.layout?.addWidget(flipHorizontallyBtn);
 center.layout?.addWidget(convertToGreyscaleBtn);
 center.layout?.addWidget(quantizeBtn);
 center.layout?.addWidget(adjustBrightnessBtn);
+center.layout?.addWidget(adjustContrastBtn);
 center.layout?.addWidget(savePictureBtn);
 center.setInlineStyle(`width: 400; height: 400;`);
 win.setCentralWidget(center);
