@@ -9,6 +9,10 @@ import {
   FileMode,
   QInputDialog,
   InputMode,
+  WidgetEventTypes,
+  QPainter,
+  QColor,
+  CompositionMode,
 } from "@nodegui/nodegui";
 import { readFileSync, writeFileSync } from "fs";
 import { BufferRet, decode, encode } from "jpeg-js";
@@ -20,6 +24,7 @@ import { quantizeImage } from "./image-operations/quantizeImage";
 import { adjustBrightness } from "./image-operations/adjustBrightness";
 import { adjustContrast } from "./image-operations/adjustContrast";
 import { negateImage } from "./image-operations/negateImage";
+import { calculateHistogram, Histogram } from "./image-operations/calculateHistogram";
 
 const NUMBER_OF_CHANNELS = 4;
 
@@ -34,6 +39,7 @@ const adjustContrastBtn = new QPushButton();
 const adjustBrightnessBtn = new QPushButton();
 const negateImageBtn = new QPushButton();
 const quantizeBtn = new QPushButton();
+const showHistogramBtn = new QPushButton();
 
 let imageData: Image | undefined;
 let lastImageTransformed: BufferRet | undefined;
@@ -96,6 +102,14 @@ negateImageBtn.addEventListener("clicked", () => {
     const newImageEncoded = encode(newImage);
     displayNewImageWindow(newImageEncoded);
     lastImageTransformed = newImageEncoded;
+  }
+});
+
+showHistogramBtn.setText("Show histogram");
+showHistogramBtn.addEventListener("clicked", () => {
+  if (imageData) {
+    const histogram = calculateHistogram(imageData, NUMBER_OF_CHANNELS);
+    displayNewHistogram(histogram);
   }
 });
 
@@ -188,9 +202,11 @@ center.layout?.addWidget(quantizeBtn);
 center.layout?.addWidget(adjustBrightnessBtn);
 center.layout?.addWidget(adjustContrastBtn);
 center.layout?.addWidget(negateImageBtn);
+center.layout?.addWidget(showHistogramBtn);
 center.layout?.addWidget(savePictureBtn);
 
 center.setInlineStyle(`width: 400; height: 400;`);
+win.setInlineStyle('background-color: #0f0e17;');
 win.setCentralWidget(center);
 win.show();
 win.setFixedSize(400, 400);
@@ -205,4 +221,43 @@ function displayNewImageWindow(imageData: Image) {
   label.setPixmap(image);
   originalPictureWin.setCentralWidget(label);
   originalPictureWin.show();
+}
+
+function displayNewHistogram(histogram: Histogram){
+  const win = new QMainWindow();
+  const center = new QWidget();
+  const layout = new FlexLayout();
+  center.setLayout(layout);
+  win.resize(765, 500);
+  win.setInlineStyle('background-color: #0f0e17;')
+
+  win.addEventListener(WidgetEventTypes.Paint, () => {
+    const painter = new QPainter(win);
+    const BAR_WIDTH = 3;
+    const BAR_HEIGHT = 450;
+
+    const greatestShade = findGreatestShadeInHistogram(histogram);
+    for(let i = 0; i < 255; i ++){
+      let histogramValue = histogram[i];
+
+      let normalizedValue = histogramValue / greatestShade;
+      painter.fillRect(i * BAR_WIDTH, win.height(), BAR_WIDTH, -normalizedValue * BAR_HEIGHT,new QColor(255,137,6) );
+    }
+    painter.end();
+  });
+  win.show();
+}
+
+function findGreatestShadeInHistogram(histogram: Histogram){
+  let greatestShade = histogram[0];
+
+  for(const shade in histogram){
+    let value = histogram[shade];
+
+    if(value > greatestShade){
+      greatestShade = value;
+    }
+  }
+
+  return greatestShade;
 }
