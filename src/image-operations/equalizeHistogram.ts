@@ -8,7 +8,7 @@ export function equalizeHistogram(image: Image, numberOfChannels: number) : Imag
     if(!isGrayscaleImage(image, numberOfChannels)){
         imageInGrayscale = convertToGrayScale(image, numberOfChannels);
     }
-    
+
     const histogram = calculateHistogram(imageInGrayscale, numberOfChannels);
     const cumulativeHistogram = calculateCumulativeHistogram(histogram, imageInGrayscale.width * imageInGrayscale.height);
 
@@ -30,10 +30,14 @@ function calculateCumulativeHistogram(histogram: Histogram, numberOfPixels: numb
     const cumulativeHistogram = getNewHistogram();
     const alpha = 255 / numberOfPixels;
 
-    cumulativeHistogram[0] = Math.trunc(histogram[0] * alpha);
+    cumulativeHistogram[0] = histogram[0] * alpha;
 
-    for(let i = 1; i < 255; i ++){
-        cumulativeHistogram[i] = Math.trunc(cumulativeHistogram[i -1] + alpha * histogram[i]);
+    for(let i = 1; i < 255; i++){
+        cumulativeHistogram[i] = cumulativeHistogram[i -1] + (alpha * histogram[i]);
+    }
+
+    for(let i = 0; i < 255; i++){
+        cumulativeHistogram[i] = Math.trunc(cumulativeHistogram[i]);
     }
 
     return cumulativeHistogram;
