@@ -20,7 +20,7 @@ export function calculateHistogram(image: Image, numberOfChannels: number) : His
     return histogram;
 }
 
-function getNewHistogram() : Histogram{
+export function getNewHistogram() : Histogram{
     const histogram : Histogram = {};
     for(let i = 0; i < 255; i++){
         histogram[i] = 0;

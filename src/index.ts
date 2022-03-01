@@ -25,6 +25,7 @@ import { adjustBrightness } from "./image-operations/adjustBrightness";
 import { adjustContrast } from "./image-operations/adjustContrast";
 import { negateImage } from "./image-operations/negateImage";
 import { calculateHistogram, Histogram } from "./image-operations/calculateHistogram";
+import { equalizeHistogram } from "./image-operations/equalizeHistogram";
 
 const NUMBER_OF_CHANNELS = 4;
 
@@ -38,6 +39,7 @@ const flipVerticallyBtn = new QPushButton();
 const adjustContrastBtn = new QPushButton();
 const adjustBrightnessBtn = new QPushButton();
 const negateImageBtn = new QPushButton();
+const equalizeHistogramBtn = new QPushButton();
 const quantizeBtn = new QPushButton();
 const showHistogramBtn = new QPushButton();
 
@@ -99,6 +101,16 @@ negateImageBtn.setText("Negate image");
 negateImageBtn.addEventListener("clicked", () => {
   if (imageData) {
     const newImage = negateImage(imageData, NUMBER_OF_CHANNELS);
+    const newImageEncoded = encode(newImage);
+    displayNewImageWindow(newImageEncoded);
+    lastImageTransformed = newImageEncoded;
+  }
+});
+
+equalizeHistogramBtn.setText("Equalize histogram");
+equalizeHistogramBtn.addEventListener("clicked", () => {
+  if (imageData) {
+    const newImage = equalizeHistogram(imageData, NUMBER_OF_CHANNELS);
     const newImageEncoded = encode(newImage);
     displayNewImageWindow(newImageEncoded);
     lastImageTransformed = newImageEncoded;
@@ -202,6 +214,7 @@ center.layout?.addWidget(quantizeBtn);
 center.layout?.addWidget(adjustBrightnessBtn);
 center.layout?.addWidget(adjustContrastBtn);
 center.layout?.addWidget(negateImageBtn);
+center.layout?.addWidget(equalizeHistogramBtn);
 center.layout?.addWidget(showHistogramBtn);
 center.layout?.addWidget(savePictureBtn);
 

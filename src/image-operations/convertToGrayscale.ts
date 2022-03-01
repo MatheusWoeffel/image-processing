@@ -1,11 +1,11 @@
 import { Image } from "./types";
-import { fromBufferToPixels } from "./utility";
+import { copyBuffer, fromBufferToPixels } from "./utility";
 
 export function convertToGrayScale(
   image: Image,
   number_of_channels: number
 ): Image {
-  const pixels: Buffer[] = fromBufferToPixels(image.data, number_of_channels);
+  const pixels: Buffer[] = fromBufferToPixels(copyBuffer(image.data), number_of_channels);
 
   pixels.map((pixel) => {
     let luminance = calculateLuminance(pixel);
