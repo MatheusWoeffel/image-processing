@@ -19,6 +19,7 @@ import { mirrorVertically } from "./image-operations/mirrorVertically";
 import { quantizeImage } from "./image-operations/quantizeImage";
 import { adjustBrightness } from "./image-operations/adjustBrightness";
 import { adjustContrast } from "./image-operations/adjustContrast";
+import { negateImage } from "./image-operations/negateImage";
 
 const NUMBER_OF_CHANNELS = 4;
 
@@ -31,6 +32,7 @@ const flipHorizontallyBtn = new QPushButton();
 const flipVerticallyBtn = new QPushButton();
 const adjustContrastBtn = new QPushButton();
 const adjustBrightnessBtn = new QPushButton();
+const negateImageBtn = new QPushButton();
 const quantizeBtn = new QPushButton();
 
 let imageData: Image | undefined;
@@ -81,6 +83,16 @@ flipVerticallyBtn.setText("Flip Vertically");
 flipVerticallyBtn.addEventListener("clicked", () => {
   if (imageData) {
     const newImage = mirrorVertically(imageData, NUMBER_OF_CHANNELS);
+    const newImageEncoded = encode(newImage);
+    displayNewImageWindow(newImageEncoded);
+    lastImageTransformed = newImageEncoded;
+  }
+});
+
+negateImageBtn.setText("Negate image");
+negateImageBtn.addEventListener("clicked", () => {
+  if (imageData) {
+    const newImage = negateImage(imageData, NUMBER_OF_CHANNELS);
     const newImageEncoded = encode(newImage);
     displayNewImageWindow(newImageEncoded);
     lastImageTransformed = newImageEncoded;
@@ -175,7 +187,9 @@ center.layout?.addWidget(convertToGreyscaleBtn);
 center.layout?.addWidget(quantizeBtn);
 center.layout?.addWidget(adjustBrightnessBtn);
 center.layout?.addWidget(adjustContrastBtn);
+center.layout?.addWidget(negateImageBtn);
 center.layout?.addWidget(savePictureBtn);
+
 center.setInlineStyle(`width: 400; height: 400;`);
 win.setCentralWidget(center);
 win.show();
