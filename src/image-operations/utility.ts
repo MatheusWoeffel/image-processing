@@ -2,13 +2,13 @@ import { Image } from "./types";
 
 export function fromBufferToPixels(
   row: Buffer,
-  number_of_channels: number
+  numberOfChannels: number
 ): Buffer[] {
   const pixels: Buffer[] = [];
-  for (let i = 0; i < row.length / number_of_channels; i++) {
+  for (let i = 0; i < row.length / numberOfChannels; i++) {
     let pixel = row.slice(
-      i * number_of_channels,
-      i * number_of_channels + number_of_channels
+      i * numberOfChannels,
+      i * numberOfChannels + numberOfChannels
     );
     pixels.push(pixel);
   }
