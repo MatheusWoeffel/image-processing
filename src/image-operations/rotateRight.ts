@@ -1,4 +1,5 @@
 import { Image } from "./types";
+import { convert2dto1dPosition } from "./utility";
 
 export function rotateRight(image: Image, numberOfChannels: number) : Image{
     const newImageWidth = image.height;
@@ -22,13 +23,3 @@ export function rotateRight(image: Image, numberOfChannels: number) : Image{
     return {width: newImageWidth, height: newImageHeight, data: newImageBuffer};
 }
 
-type Position = {
-    x : number;
-    y : number;
-};
-
-function convert2dto1dPosition(position: Position, width: number, numberOfChannels: number) : number{
-    const startIndexOfPixel = position.x * width * numberOfChannels + position.y * numberOfChannels;
-
-    return startIndexOfPixel;
-}

@@ -27,3 +27,14 @@ export function isGrayscaleImage(image: Image, numberOfChannels: number) : boole
 
   return pixels[0][0] === pixels[0][1] && pixels[0][1] === pixels[0][2];
 }
+
+export type Position = {
+  x : number;
+  y : number;
+};
+
+export function convert2dto1dPosition(position: Position, width: number, numberOfChannels: number) : number{
+  const startIndexOfPixel = position.x * width * numberOfChannels + position.y * numberOfChannels;
+
+  return startIndexOfPixel;
+}
