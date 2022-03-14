@@ -26,6 +26,8 @@ import { negateImage } from "./image-operations/negateImage";
 import { calculateHistogram, Histogram } from "./image-operations/calculateHistogram";
 import { equalizeHistogram } from "./image-operations/equalizeHistogram";
 import { convolveImage, KernelRow } from "./image-operations/convolveImage";
+import { rotateLeft } from "./image-operations/rotateLeft";
+import { rotateRight } from "./image-operations/rotateRight";
 
 const NUMBER_OF_CHANNELS = 4;
 
@@ -43,6 +45,8 @@ const equalizeHistogramBtn = new QPushButton();
 const quantizeBtn = new QPushButton();
 const showHistogramBtn = new QPushButton();
 const convolveImageBtn = new QPushButton();
+const rotateRightBtn = new QPushButton();
+const rotateLeftBtn = new QPushButton();
 
 let imageData: Image | undefined;
 let lastImageTransformed: BufferRet | undefined;
@@ -92,6 +96,26 @@ flipVerticallyBtn.setText("Flip Vertically");
 flipVerticallyBtn.addEventListener("clicked", () => {
   if (imageData) {
     const newImage = mirrorVertically(imageData, NUMBER_OF_CHANNELS);
+    const newImageEncoded = encode(newImage);
+    displayNewImageWindow(newImageEncoded);
+    lastImageTransformed = newImageEncoded;
+  }
+});
+
+rotateLeftBtn.setText("Rotate left");
+rotateLeftBtn.addEventListener("clicked", () => {
+  if (imageData) {
+    const newImage = rotateLeft(imageData, NUMBER_OF_CHANNELS);
+    const newImageEncoded = encode(newImage);
+    displayNewImageWindow(newImageEncoded);
+    lastImageTransformed = newImageEncoded;
+  }
+});
+
+rotateRightBtn.setText("Rotate right");
+rotateRightBtn.addEventListener("clicked", () => {
+  if (imageData) {
+    const newImage = rotateRight(imageData, NUMBER_OF_CHANNELS);
     const newImageEncoded = encode(newImage);
     displayNewImageWindow(newImageEncoded);
     lastImageTransformed = newImageEncoded;
@@ -242,13 +266,15 @@ center.layout?.addWidget(negateImageBtn);
 center.layout?.addWidget(equalizeHistogramBtn);
 center.layout?.addWidget(showHistogramBtn);
 center.layout?.addWidget(convolveImageBtn);
+center.layout?.addWidget(rotateLeftBtn);
+center.layout?.addWidget(rotateRightBtn);
 center.layout?.addWidget(savePictureBtn);
 
-center.setInlineStyle(`width: 400; height: 400;`);
+center.setInlineStyle(`width: 400; height: 600;`);
 win.setInlineStyle('background-color: #0f0e17;');
 win.setCentralWidget(center);
 win.show();
-win.setFixedSize(400, 400);
+win.setFixedSize(400, 600);
 (global as any).win = win;
 
 function displayNewImageWindow(imageData: Image) {
