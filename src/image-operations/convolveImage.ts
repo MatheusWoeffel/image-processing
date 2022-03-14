@@ -1,7 +1,6 @@
 import { buffer } from "stream/consumers";
-import { convert2dto1dPosition, Position } from "./rotateLeft";
 import { Image } from "./types";
-import { fromBufferToPixels } from "./utility";
+import { convert2dto1dPosition, fromBufferToPixels, Position } from "./utility";
 
 export type KernelRow = [number, number, number];
 export type Kernel = [KernelRow, KernelRow, KernelRow];
