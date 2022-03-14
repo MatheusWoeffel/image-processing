@@ -22,12 +22,12 @@ export function rotateLeft(image: Image, numberOfChannels: number) : Image{
     return {width: newImageWidth, height: newImageHeight, data: newImageBuffer};
 }
 
-type Position = {
+export type Position = {
     x : number;
     y : number;
 };
 
-function convert2dto1dPosition(position: Position, width: number, numberOfChannels: number) : number{
+export function convert2dto1dPosition(position: Position, width: number, numberOfChannels: number) : number{
     const startIndexOfPixel = position.x * width * numberOfChannels + position.y * numberOfChannels;
 
     return startIndexOfPixel;

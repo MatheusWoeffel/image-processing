@@ -12,7 +12,6 @@ import {
   WidgetEventTypes,
   QPainter,
   QColor,
-  CompositionMode,
 } from "@nodegui/nodegui";
 import { readFileSync, writeFileSync } from "fs";
 import { BufferRet, decode, encode } from "jpeg-js";
@@ -26,6 +25,7 @@ import { adjustContrast } from "./image-operations/adjustContrast";
 import { negateImage } from "./image-operations/negateImage";
 import { calculateHistogram, Histogram } from "./image-operations/calculateHistogram";
 import { equalizeHistogram } from "./image-operations/equalizeHistogram";
+import { convolveImage, KernelRow } from "./image-operations/convolveImage";
 
 const NUMBER_OF_CHANNELS = 4;
 
@@ -42,6 +42,7 @@ const negateImageBtn = new QPushButton();
 const equalizeHistogramBtn = new QPushButton();
 const quantizeBtn = new QPushButton();
 const showHistogramBtn = new QPushButton();
+const convolveImageBtn = new QPushButton();
 
 let imageData: Image | undefined;
 let lastImageTransformed: BufferRet | undefined;
@@ -181,6 +182,30 @@ adjustContrastBtn.addEventListener("clicked", () => {
   lastImageTransformed = newImageEncoded;
 });
 
+convolveImageBtn.setText("Convolve image");
+convolveImageBtn.addEventListener("clicked", () => {
+  const inputDialog = new QInputDialog();
+  inputDialog.setDoubleMinimum(0)
+  inputDialog.setDoubleMaximum(255)
+
+  let kernelValues = "";
+  inputDialog.addEventListener("textValueChanged", (value) => {
+    kernelValues = value;
+  });
+  inputDialog.setInputMode(InputMode.TextInput);
+  inputDialog.exec();
+
+  let kernelAsNumber = kernelValues.split(",").map(value => Number(value));
+  let firstKernelRow = [kernelAsNumber[0], kernelAsNumber[1], kernelAsNumber[2]] as KernelRow;
+  let secondKernelRow = [kernelAsNumber[3], kernelAsNumber[4], kernelAsNumber[5]] as KernelRow;
+  let thirdKernelRow = [kernelAsNumber[6], kernelAsNumber[7], kernelAsNumber[8]] as KernelRow;
+
+  const newImage = convolveImage(imageData, [firstKernelRow, secondKernelRow, thirdKernelRow], true, NUMBER_OF_CHANNELS);
+  const newImageEncoded = encode(newImage);
+  displayNewImageWindow(newImageEncoded);
+  lastImageTransformed = newImageEncoded;
+})
+
 savePictureBtn.setText("Save last transformed picture");
 savePictureBtn.addEventListener("clicked", () => {
   if (lastImageTransformed) {
@@ -216,6 +241,7 @@ center.layout?.addWidget(adjustContrastBtn);
 center.layout?.addWidget(negateImageBtn);
 center.layout?.addWidget(equalizeHistogramBtn);
 center.layout?.addWidget(showHistogramBtn);
+center.layout?.addWidget(convolveImageBtn);
 center.layout?.addWidget(savePictureBtn);
 
 center.setInlineStyle(`width: 400; height: 400;`);
